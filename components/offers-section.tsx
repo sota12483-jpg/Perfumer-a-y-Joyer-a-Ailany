@@ -46,15 +46,20 @@ export function OffersSection() {
 
   useEffect(() => {
     const fetchOfertas = async () => {
-      const supabase = createClient()
-      const { data } = await supabase
-        .from("products")
-        .select("*")
-        .eq("category", "oferta")
-        .order("position")
+      try {
+        const supabase = createClient()
+        const { data } = await supabase
+          .from("products")
+          .select("*")
+          .eq("category", "oferta")
+          .order("position")
 
-      setOfertas(data ?? [])
-      setLoading(false)
+        setOfertas(data ?? [])
+      } catch (e) {
+        console.error("Error cargando ofertas:", e)
+      } finally {
+        setLoading(false)
+      }
     }
     fetchOfertas()
   }, [])

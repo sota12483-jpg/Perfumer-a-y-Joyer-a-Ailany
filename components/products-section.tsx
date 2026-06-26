@@ -186,18 +186,23 @@ export function ProductsSection() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const supabase = createClient()
-      const { data } = await supabase
-        .from("products")
-        .select("*")
-        .in("category", ["perfume", "reloj"])
-        .order("position")
+      try {
+        const supabase = createClient()
+        const { data } = await supabase
+          .from("products")
+          .select("*")
+          .in("category", ["perfume", "reloj"])
+          .order("position")
 
-      if (data) {
-        setPerfumes(data.filter((p) => p.category === "perfume"))
-        setRelojes(data.filter((p) => p.category === "reloj"))
+        if (data) {
+          setPerfumes(data.filter((p) => p.category === "perfume"))
+          setRelojes(data.filter((p) => p.category === "reloj"))
+        }
+      } catch (e) {
+        console.error("Error cargando productos:", e)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     fetchProducts()
   }, [])
