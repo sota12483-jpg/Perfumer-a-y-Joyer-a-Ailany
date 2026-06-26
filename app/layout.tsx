@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: 'Perfumería y Joyería Ailany',
   description: 'Tienda de perfumes y joyería de lujo. Productos originales y exclusivos con garantía.',
   generator: 'v0.app',
+  other: {
+    'google-adsense-account': 'ca-pub-7243616382463721',
+  },
   icons: {
     icon: [
       {
