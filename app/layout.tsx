@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/context/auth-context'
 import { SplashScreen } from '@/components/splash-screen'
+import Script from 'next/script'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -39,6 +40,12 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="font-sans antialiased bg-background">
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7243616382463721"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <SplashScreen />
         <AuthProvider>
           {children}
