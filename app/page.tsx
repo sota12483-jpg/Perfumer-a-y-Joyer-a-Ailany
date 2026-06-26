@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/hero-section"
 import { ProductsSection } from "@/components/products-section"
 import { FeaturesSection } from "@/components/features-section"
 import { OffersSection } from "@/components/offers-section"
+import { SubscribeSection } from "@/components/subscribe-section"
 import { Footer } from "@/components/footer"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 
@@ -16,6 +17,7 @@ export default function Home() {
       <ProductsSection />
       <FeaturesSection />
       <OffersSection />
+      <SubscribeSection />
       <Footer />
       <WhatsAppButton phoneNumber={WHATSAPP_NUMBER} />
     </main>
