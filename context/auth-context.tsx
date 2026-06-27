@@ -4,7 +4,10 @@ import { createContext, useContext, useEffect, useState } from "react"
 import type { User } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
 
-const ADMIN_EMAIL = "monteromonteroeduard@gmail.com"
+const ADMIN_EMAILS = [
+  "monteromonteroeduard@gmail.com",
+  "martinezmuzll02@gmail.com",
+]
 
 interface AuthContextValue {
   user: User | null
@@ -76,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut()
   }
 
-  const isAdmin = user?.email === ADMIN_EMAIL
+  const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email)
   const isViewer = !isAdmin && !!viewerEmail && user?.email === viewerEmail
 
   return (
