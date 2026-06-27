@@ -3,13 +3,14 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Menu, X, ShoppingBag, LogIn, LogOut, Shield } from "lucide-react"
+import { Menu, X, LogIn, LogOut, Shield, Eye } from "lucide-react"
 import { useAuth } from "@/context/auth-context"
 
 const navigation = [
   { name: "Inicio", href: "#" },
   { name: "Perfumes", href: "#perfumes" },
   { name: "Relojes", href: "#relojes" },
+  { name: "Joyería", href: "#joyeria" },
   { name: "Ofertas", href: "#ofertas" },
   { name: "Contacto", href: "#contacto" },
 ]
@@ -17,7 +18,7 @@ const navigation = [
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const { user, isAdmin, loading, signInWithGoogle, signOut } = useAuth()
+  const { user, isAdmin, isViewer, loading, signInWithGoogle, signOut } = useAuth()
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
@@ -67,13 +68,6 @@ export function Header() {
 
         {/* Desktop right actions */}
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4 items-center">
-          <button className="text-foreground hover:text-primary transition-colors relative">
-            <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-4 h-4 rounded-full flex items-center justify-center">
-              0
-            </span>
-          </button>
-
           {!loading && (
             <>
               {user ? (
@@ -115,6 +109,11 @@ export function Header() {
                           {isAdmin && (
                             <span className="inline-flex items-center gap-1 mt-1 text-xs text-primary font-medium">
                               <Shield className="h-3 w-3" /> Administrador
+                            </span>
+                          )}
+                          {isViewer && (
+                            <span className="inline-flex items-center gap-1 mt-1 text-xs text-muted-foreground font-medium">
+                              <Eye className="h-3 w-3" /> Solo lectura
                             </span>
                           )}
                         </div>
@@ -209,6 +208,11 @@ export function Header() {
                             {isAdmin && (
                               <span className="flex items-center gap-1 text-xs text-primary">
                                 <Shield className="h-3 w-3" /> Administrador
+                              </span>
+                            )}
+                            {isViewer && (
+                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Eye className="h-3 w-3" /> Solo lectura
                               </span>
                             )}
                           </div>

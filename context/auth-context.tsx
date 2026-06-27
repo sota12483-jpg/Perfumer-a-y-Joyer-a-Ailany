@@ -9,6 +9,7 @@ const ADMIN_EMAIL = "monteromonteroeduard@gmail.com"
 interface AuthContextValue {
   user: User | null
   isAdmin: boolean
+  isViewer: boolean
   loading: boolean
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
@@ -17,6 +18,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   isAdmin: false,
+  isViewer: false,
   loading: true,
   signInWithGoogle: async () => {},
   signOut: async () => {},
@@ -29,6 +31,7 @@ const isConfigured =
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(isConfigured)
+  const [viewerEmail, setViewerEmail] = useState("")
 
   useEffect(() => {
     if (!isConfigured) return
@@ -40,7 +43,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    supabase
+      .from("store_settings")
+      .select("value")
+      .eq("key", "viewer_email")
+      .single()
+      .then(({ data }) => {
+        if (data?.value) setViewerEmail(data.value)
+      })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
 
@@ -52,9 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     })
   }
 
@@ -65,9 +77,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const isAdmin = user?.email === ADMIN_EMAIL
+  const isViewer = !isAdmin && !!viewerEmail && user?.email === viewerEmail
 
   return (
-    <AuthContext.Provider value={{ user, isAdmin, loading, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, isAdmin, isViewer, loading, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   )

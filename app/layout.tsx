@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/context/auth-context'
+import { DiscountProvider } from '@/context/discount-context'
+import { SelectionProvider } from '@/context/selection-context'
 import { SplashScreen } from '@/components/splash-screen'
 import Script from 'next/script'
 import './globals.css'
@@ -51,7 +53,11 @@ export default function RootLayout({
         />
         <SplashScreen />
         <AuthProvider>
-          {children}
+          <DiscountProvider>
+            <SelectionProvider>
+              {children}
+            </SelectionProvider>
+          </DiscountProvider>
         </AuthProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
