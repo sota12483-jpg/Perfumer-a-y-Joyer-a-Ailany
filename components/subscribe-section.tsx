@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Loader2, Mail, Sparkles, CheckCircle2 } from "lucide-react"
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile"
 
 type Status = "idle" | "loading" | "success" | "error"
 
@@ -9,6 +10,8 @@ export function SubscribeSection() {
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState<Status>("idle")
   const [errorMsg, setErrorMsg] = useState("")
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRef = useRef<TurnstileInstance>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,7 +24,7 @@ export function SubscribeSection() {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, turnstileToken }),
       })
 
       const data = await res.json()
@@ -32,12 +35,19 @@ export function SubscribeSection() {
       } else {
         setErrorMsg(data.error ?? "Ocurrió un error. Intenta de nuevo.")
         setStatus("error")
+        // Reset widget so the user can get a fresh token on retry
+        turnstileRef.current?.reset()
+        setTurnstileToken(null)
       }
     } catch {
       setErrorMsg("No se pudo conectar. Intenta de nuevo.")
       setStatus("error")
+      turnstileRef.current?.reset()
+      setTurnstileToken(null)
     }
   }
+
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""
 
   return (
     <section className="py-24 bg-card border-t border-border">
@@ -70,35 +80,47 @@ export function SubscribeSection() {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <div className="relative flex-1">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  if (status === "error") setStatus("idle")
-                }}
-                placeholder="tu@email.com"
-                required
-                className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-colors"
-              />
+          <form onSubmit={handleSubmit} className="flex flex-col items-center gap-3 max-w-md mx-auto">
+            <div className="flex flex-col sm:flex-row gap-3 w-full">
+              <div className="relative flex-1">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (status === "error") setStatus("idle")
+                  }}
+                  placeholder="tu@email.com"
+                  required
+                  className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-colors"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={status === "loading" || !turnstileToken}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 disabled:opacity-70 transition-colors whitespace-nowrap"
+              >
+                {status === "loading" ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  "Recibir ofertas exclusivas"
+                )}
+              </button>
             </div>
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 disabled:opacity-70 transition-colors whitespace-nowrap"
-            >
-              {status === "loading" ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Enviando...
-                </>
-              ) : (
-                "Recibir ofertas exclusivas"
-              )}
-            </button>
+
+            {siteKey && (
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={siteKey}
+                onSuccess={setTurnstileToken}
+                onExpire={() => setTurnstileToken(null)}
+                options={{ size: "invisible" }}
+              />
+            )}
           </form>
         )}
 

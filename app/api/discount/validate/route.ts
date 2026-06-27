@@ -1,7 +1,24 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
+import { rateLimit } from "@/lib/rate-limit"
 
 export async function POST(req: NextRequest) {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown"
+
+  const { ok, retryAfter } = rateLimit(ip, { limit: 10 })
+  if (!ok) {
+    return NextResponse.json(
+      { valid: false, message: "Demasiadas solicitudes. Intenta en un momento." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(retryAfter) },
+      }
+    )
+  }
+
   try {
     const body = await req.json()
     const code = typeof body?.code === "string" ? body.code.trim().toUpperCase() : null

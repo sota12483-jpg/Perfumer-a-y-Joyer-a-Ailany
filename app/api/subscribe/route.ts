@@ -1,22 +1,52 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
+import { rateLimit } from "@/lib/rate-limit"
 
-export async function POST(request: Request) {
+async function verifyTurnstile(token: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY
+  if (!secret) return false
+
+  const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ secret, response: token }),
+  })
+
+  const data = await res.json()
+  return data.success === true
+}
+
+export async function POST(request: NextRequest) {
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown"
+
+  const { ok, retryAfter } = rateLimit(ip, { limit: 5 })
+  if (!ok) {
+    return NextResponse.json(
+      { error: "Demasiadas solicitudes. Intenta en un momento." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(retryAfter) },
+      }
+    )
+  }
+
   try {
-    const { email } = await request.json()
+    const { email, turnstileToken } = await request.json()
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json(
-        { error: "Email inválido" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Email inválido" }, { status: 400 })
+    }
+
+    const captchaOk = await verifyTurnstile(turnstileToken ?? "")
+    if (!captchaOk) {
+      return NextResponse.json({ error: "Verificación de seguridad fallida. Intenta de nuevo." }, { status: 403 })
     }
 
     const apiKey = process.env.BREVO_API_KEY
     if (!apiKey) {
-      return NextResponse.json(
-        { error: "Servicio no configurado" },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: "Servicio no configurado" }, { status: 500 })
     }
 
     const response = await fetch("https://api.brevo.com/v3/contacts", {
@@ -42,9 +72,6 @@ export async function POST(request: Request) {
       { status: response.status }
     )
   } catch {
-    return NextResponse.json(
-      { error: "Error interno del servidor" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 }
