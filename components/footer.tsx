@@ -42,23 +42,38 @@ export function Footer() {
             <h3 className="text-lg font-semibold text-foreground mb-4">Enlaces</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="#perfumes" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                <Link href="/#perfumes" className="text-muted-foreground hover:text-primary text-sm transition-colors">
                   Perfumes
                 </Link>
               </li>
               <li>
-                <Link href="#relojes" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                <Link href="/#relojes" className="text-muted-foreground hover:text-primary text-sm transition-colors">
                   Relojes
                 </Link>
               </li>
               <li>
-                <Link href="#ofertas" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                <Link href="/#ofertas" className="text-muted-foreground hover:text-primary text-sm transition-colors">
                   Ofertas
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                <Link href="/blog" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                  Guías de Perfumería
+                </Link>
+              </li>
+              <li>
+                <Link href="/nosotros" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                  Sobre Nosotros
+                </Link>
+              </li>
+              <li>
+                <Link href="/terminos" className="text-muted-foreground hover:text-primary text-sm transition-colors">
                   Términos y Condiciones
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacidad" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                  Política de Privacidad
                 </Link>
               </li>
             </ul>
@@ -66,26 +81,26 @@ export function Footer() {
 
           {/* Categories */}
           <div>
-            <h3 className="text-lg font-semibold text-foreground mb-4">Categorías</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">Guías</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Perfumes Hombre
+                <Link href="/blog/como-elegir-el-perfume-ideal" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                  Elegir el perfume ideal
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Perfumes Mujer
+                <Link href="/blog/eau-de-parfum-vs-eau-de-toilette" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                  EDP vs EDT
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Relojes Deportivos
+                <Link href="/blog/mejores-perfumes-orientales" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                  Perfumes Orientales
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Relojes Elegantes
+                <Link href="/blog/como-hacer-durar-mas-el-perfume" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                  Trucos para más duración
                 </Link>
               </li>
             </ul>

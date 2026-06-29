@@ -7,12 +7,13 @@ import { Menu, X, LogIn, LogOut, Shield, Eye } from "lucide-react"
 import { useAuth } from "@/context/auth-context"
 
 const navigation = [
-  { name: "Inicio", href: "#" },
-  { name: "Perfumes", href: "#perfumes" },
-  { name: "Relojes", href: "#relojes" },
-  { name: "Joyería", href: "#joyeria" },
-  { name: "Ofertas", href: "#ofertas" },
-  { name: "Contacto", href: "#contacto" },
+  { name: "Inicio", href: "/" },
+  { name: "Perfumes", href: "/#perfumes" },
+  { name: "Relojes", href: "/#relojes" },
+  { name: "Joyería", href: "/#joyeria" },
+  { name: "Ofertas", href: "/#ofertas" },
+  { name: "Guías", href: "/blog" },
+  { name: "Contacto", href: "/#contacto" },
 ]
 
 export function Header() {
